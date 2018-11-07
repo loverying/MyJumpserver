@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/Bootstrap_files/bootstrap.min.css">
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <style>
+        .errors{
+            color: red;
+        }
+    </style>
+    <title>新增主机组</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h1>新增主机组</h1>
+            <form>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="">主机组</label>
+                    <input type="text" id="group_name" class="form-control">
+                </div>
+
+                <input type="button" id="submit" value="确定" class="btn btn-danger">
+                <li class="btn btn-danger"><a href="/index/">返回</a></li>
+                <span class="errors"></span>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("#submit").click(function () {
+        $.ajax({
+            url: '/add_host_group/',
+            type: 'post',
+            data: {
+                'group_name': $("#group_name").val(),
+                'csrfmiddlewaretoken':'{{csrf_token}}'
+            },
+            success: function (data) {
+                if(data.user){
+                    //一旦登录成功，跳转到首页
+                    location.href='/host_group_list/'
+                }else{
+                    $(".errors").text(data.msg)
+                }
+            }
+
+        })
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/Bootstrap_files/bootstrap.min.css">
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <style>
+        .errors{
+            color: red;
+        }
+    </style>
+    <title>登录页面</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h1>登录</h1>
+            <form>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="">用户名</label>
+                    <input type="text" id="id_name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">密码</label>
+                    <input type="text" id="id_pwd" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">验证码</label>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <input type="text" id="code" class="form-control">
+                        </div>
+                        <div class="col-lg-6">
+                            <img height="35" width="250" src="/get_code/" alt="">
+                        </div>
+
+                    </div>
+                </div>
+                <input type="button" id="submit" value="登录" class="btn btn-danger">
+                <span class="errors"></span>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("#submit").click(function () {
+        $.ajax({
+            url: '/login/',
+            type: 'post',
+            data: {
+                'name': $("#id_name").val(),
+                'pwd': $("#id_pwd").val(),
+                'code': $("#code").val(),
+                'csrfmiddlewaretoken':'{{csrf_token}}'
+            },
+            success: function (data) {
+                if(data.user){
+                    //一旦登录成功，跳转到首页
+                    location.href='/index/'
+                }else{
+                    $(".errors").text(data.msg)
+                }
+            }
+
+        })
+    })
+
+</script>
+</body>
+</html>

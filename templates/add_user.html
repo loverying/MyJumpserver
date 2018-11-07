@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/Bootstrap_files/bootstrap.min.css">
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <style>
+        .errors{
+            color: red;
+        }
+    </style>
+    <title>新增用户</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h1>新增用户</h1>
+            <form id="my_form">
+
+                {% csrf_token %}
+                {% for foo in form_obj %}
+                    <div class="form-group">
+                        <label for="">{{ foo.label }}</label>
+                        {{ foo }} <span class="errors"></span>
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <label for="my_file">头像
+                        <img height="60px" width="60px" src="/static/img/default.png" id="id_img">
+                    </label>
+                    <input type="file" id="my_file">
+                </div>
+
+                <input type="button" id="id_button" class="btn btn-success" value="确定">
+                <li class="btn btn-danger"><a href="/user_list/">返回</a></li>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("#my_file").change(function () {
+        var obj=$("#my_file")[0].files[0]
+        var read=new FileReader()
+        read.readAsDataURL(obj)
+        read.onload=function(){
+            $("#id_img").attr('src',read.result)
+        }
+    })
+
+
+    $("#id_button").click(function ()  {
+        var formdata=new FormData()
+        var tt=$("#my_form").serializeArray()
+        $.each(tt,function (index,value) {
+            formdata.append(value.name,value.value)
+        })
+        formdata.append('myfile',$("#my_file")[0].files[0])
+       // console.log(tt)
+
+        $.ajax({
+            url:'',
+            type:'post',
+            processData:false,
+            contentType:false,
+            data:formdata,
+            success:function (data) {
+                //console.log(data)
+                if(data.user){
+                    location.href='/user_list/'
+                }else{
+                    $.each(data.msg,function (index,value) {
+                        console.log(index)
+                        console.log(value)
+                        if(index=="__all__"){
+                            $("#id_re_pwd").next().text(value[0])
+                        }
+                        $("#id_"+index).next().text(value[0]).parent().addClass('has-error')
+                    })
+                    setTimeout(function () {
+                        $(".form-group").removeClass('has-error')
+                        $('span').text("")
+                    },1000)
+                }
+
+            }
+
+        })
+
+    })
+
+
+
+
+</script>
+</body>
+</html>
